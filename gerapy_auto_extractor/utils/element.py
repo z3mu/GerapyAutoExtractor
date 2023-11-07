@@ -205,7 +205,7 @@ def descendants(element: Element, including=False):
     if including:
         yield element
     for descendant in element.iterdescendants():
-        if isinstance(descendant, HtmlElement):
+        if isinstance(descendant, HtmlElement) and descendant.tag=='div':
             descendant.__class__ = Element
             yield descendant
 

@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 from gerapy_auto_extractor.schemas.element import Element
 from gerapy_auto_extractor.utils.preprocess import preprocess4content_extractor
@@ -17,14 +19,19 @@ class ContentExtractor(BaseExtractor):
         :return:
         """
         # preprocess
-        preprocess4content_extractor(element)
+        # preprocess4content_extractor(element)
         
         # start to evaluate every child element
         element_infos = []
         descendants = descendants_of_body(element)
-        
+        descendants_copy = [copy.deepcopy(descendant) for descendant in descendants]
+
+        density_of_text = []
+        for descendant in descendants:
+            preprocess4content_extractor(descendant)
+            density_of_text.append(descendant.density_of_text)
         # get std of density_of_text among all elements
-        density_of_text = [descendant.density_of_text for descendant in descendants]
+        # density_of_text = [descendant.density_of_text for descendant in descendants]
         density_of_text_std = np.std(density_of_text, ddof=1)
         
         # get density_score of every element
@@ -36,16 +43,17 @@ class ContentExtractor(BaseExtractor):
             descendant.density_score = score
         
         # sort element info by density_score
-        descendants = sorted(descendants, key=lambda x: x.density_score, reverse=True)
+        descendants = sorted(list(zip(descendants, descendants_copy)), key=lambda x: x[0].density_score, reverse=True)
         descendant_first = descendants[0] if descendants else None
+        descendant_first = descendant_first[1] if descendant_first[1] else None
         if descendant_first is None:
             return None
-        paragraphs = descendant_first.xpath('.//p//text()')
-        paragraphs = [paragraph.strip() if paragraph else '' for paragraph in paragraphs]
-        paragraphs = list(filter(lambda x: x, paragraphs))
-        text = '\n'.join(paragraphs)
-        text = text.strip()
-        return text
+        # paragraphs = descendant_first.xpath('.//p//text()')
+        # paragraphs = [paragraph.strip() if paragraph else '' for paragraph in paragraphs]
+        # paragraphs = list(filter(lambda x: x, paragraphs))
+        # text = '\n'.join(paragraphs)
+        # text = text.strip()
+        return descendant_first
 
 
 content_extractor = ContentExtractor()
