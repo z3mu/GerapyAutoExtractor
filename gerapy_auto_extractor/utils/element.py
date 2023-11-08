@@ -205,6 +205,22 @@ def descendants(element: Element, including=False):
     if including:
         yield element
     for descendant in element.iterdescendants():
+        if isinstance(descendant, HtmlElement):
+            descendant.__class__ = Element
+            yield descendant
+
+def descendants4content_extractor(element: Element, including=False):
+    """
+    get descendants clement of specific element
+    :param element: parent element
+    :param including: including current element or not
+    :return:
+    """
+    if element is None:
+        return []
+    if including:
+        yield element
+    for descendant in element.iterdescendants():
         if isinstance(descendant, HtmlElement) and descendant.tag=='div':
             descendant.__class__ = Element
             yield descendant
@@ -262,6 +278,22 @@ def descendants_of_body(element: Element):
     if elements:
         elements[0].__class__ = Element
         return list(descendants(elements[0], True))
+    return []
+
+
+def descendants_of_body4content_extractor(element: Element):
+    """
+    get descendants element of body element
+    :param element:
+    :return:
+    """
+    if element is None:
+        return []
+    body_xpath = '//body'
+    elements = element.xpath(body_xpath)
+    if elements:
+        elements[0].__class__ = Element
+        return list(descendants4content_extractor(elements[0], True))
     return []
 
 

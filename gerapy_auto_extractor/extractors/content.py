@@ -4,7 +4,7 @@ import numpy as np
 from gerapy_auto_extractor.schemas.element import Element
 from gerapy_auto_extractor.utils.preprocess import preprocess4content_extractor
 from gerapy_auto_extractor.extractors.base import BaseExtractor
-from gerapy_auto_extractor.utils.element import descendants_of_body
+from gerapy_auto_extractor.utils.element import descendants_of_body4content_extractor
 
 
 class ContentExtractor(BaseExtractor):
@@ -23,7 +23,7 @@ class ContentExtractor(BaseExtractor):
         
         # start to evaluate every child element
         element_infos = []
-        descendants = descendants_of_body(element)
+        descendants = descendants_of_body4content_extractor(element)
         descendants_copy = [copy.deepcopy(descendant) for descendant in descendants]
 
         density_of_text = []
